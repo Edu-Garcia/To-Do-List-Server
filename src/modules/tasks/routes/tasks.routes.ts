@@ -7,6 +7,8 @@ const tasksController = new TasksController();
 
 tasksRouter.get('/', tasksController.index);
 
+// teste aaa
+
 tasksRouter.post(
   '/',
   celebrate({
@@ -51,5 +53,7 @@ tasksRouter.delete(
   }),
   tasksController.delete,
 );
+
+tasksRouter.delete('/', tasksController.deleteAll);
 
 export { tasksRouter };

@@ -4,6 +4,7 @@ import { ListTaskService } from '../services/ListTaskService';
 import { UpdateTaskService } from '../services/UpdateTaskService';
 import { CompleteTaskService } from '../services/CompleteTaskService';
 import { DeleteTaskService } from '../services/DeleteTaskService';
+import { DeleteAllTasksService } from '../services/DeleteAllTasksService';
 
 export class TasksController {
   public async index(request: Request, response: Response): Promise<Response> {
@@ -54,6 +55,17 @@ export class TasksController {
     const deleteTask = new DeleteTaskService();
 
     const task = await deleteTask.execute({ id });
+
+    return response.json({ message: task });
+  }
+
+  public async deleteAll(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const deleteAllTask = new DeleteAllTasksService();
+
+    const task = await deleteAllTask.execute();
 
     return response.json({ message: task });
   }
