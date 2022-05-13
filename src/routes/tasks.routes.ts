@@ -1,13 +1,11 @@
 import { Router } from 'express';
-import { TasksController } from '../controllers/TasksController';
+import { TasksController } from '../controllers/task.controller';
 import { celebrate, Joi, Segments } from 'celebrate';
 
 const tasksRouter = Router();
 const tasksController = new TasksController();
 
 tasksRouter.get('/', tasksController.index);
-
-// teste aaa
 
 tasksRouter.post(
   '/',

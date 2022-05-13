@@ -1,4 +1,4 @@
-class AppError {
+class ApiError {
   public readonly message: string;
   public readonly statusCode: number;
 
@@ -8,4 +8,4 @@ class AppError {
   }
 }
 
-export default AppError;
+export default ApiError;
