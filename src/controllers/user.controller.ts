@@ -3,9 +3,11 @@ import { UserService } from 'src/services/user.service';
 
 export class UsersController {
   public async index(request: Request, response: Response): Promise<Response> {
+    const { id } = request.user;
+
     const userService = new UserService();
 
-    const user = await userService.listUserService();
+    const user = await userService.listUserService(id);
 
     return response.json(user);
   }
@@ -41,7 +43,7 @@ export class UsersController {
 
     const userService = new UserService();
 
-    const user = await userService.deleteUserService({ id });
+    const user = await userService.deleteUserService(id);
 
     return response.json({ message: user });
   }

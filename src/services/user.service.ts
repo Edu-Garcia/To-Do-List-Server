@@ -15,10 +15,10 @@ interface IUpdateUserProps extends ICreateUserProps {
 }
 
 export class UserService {
-  public async listUserService(): Promise<User[]> {
+  public async listUserService(id: string): Promise<User | undefined> {
     const usersRepository = getCustomRepository(UsersRepository);
-    const users = await usersRepository.find();
-    return users;
+    const user = await usersRepository.findOne({ id });
+    return user;
   }
 
   public async createUserService({
@@ -79,7 +79,7 @@ export class UserService {
     return user;
   }
 
-  public async deleteUserService({ id }: { id: string }): Promise<string> {
+  public async deleteUserService(id: string): Promise<string> {
     const usersRepository = getCustomRepository(UsersRepository);
     const user = await usersRepository.findOne(id);
 
