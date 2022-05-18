@@ -1,10 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Base } from './Base.Entity';
+import { User } from './User.Entity';
 
 @Entity('tasks')
-class Task {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Task extends Base {
   @Column()
   title: string;
 
@@ -13,6 +12,8 @@ class Task {
 
   @Column()
   complete: boolean;
-}
 
-export default Task;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+}

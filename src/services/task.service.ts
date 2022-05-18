@@ -1,11 +1,12 @@
-import ApiError from '../utils/apiErrors.util';
-import { getCustomRepository } from 'typeorm';
-import Task from '../database/entities/Task.Entity';
+import { ApiError } from '../utils/apiErrors.util';
+import { Equal, getCustomRepository, Not } from 'typeorm';
+import { Task } from '../database/entities/Task.Entity';
 import { TasksRepository } from '../database/repositories/task.repository';
 
 interface ICreateTask {
   title: string;
   description: string;
+  userId: string;
 }
 
 interface IUpdateTask extends ICreateTask {
@@ -13,9 +14,11 @@ interface IUpdateTask extends ICreateTask {
 }
 
 export class TaskService {
-  public async listTaskService(): Promise<Task[]> {
+  public async listTaskService(userId: string): Promise<Task[]> {
     const taskRepository = getCustomRepository(TasksRepository);
-    const tasks = await taskRepository.find();
+    const tasks = await taskRepository.find({
+      user: { id: userId },
+    });
 
     return tasks;
   }
@@ -23,15 +26,23 @@ export class TaskService {
   public async createTaskService({
     title,
     description,
+    userId,
   }: ICreateTask): Promise<Task> {
     const taskRepository = getCustomRepository(TasksRepository);
-    const taskExists = await taskRepository.findOne({ title });
+    const taskExists = await taskRepository.findOne({
+      title,
+      user: { id: userId },
+    });
 
     if (taskExists) {
       throw new ApiError('Tarefa já existe!');
     }
 
-    const task = taskRepository.create({ title, description });
+    const task = taskRepository.create({
+      title,
+      description,
+      user: { id: userId },
+    });
     await taskRepository.save(task);
 
     return task;
@@ -41,17 +52,22 @@ export class TaskService {
     id,
     title,
     description,
+    userId,
   }: IUpdateTask): Promise<Task> {
     const taskRepository = getCustomRepository(TasksRepository);
-    const task = await taskRepository.findOne(id);
+    const task = await taskRepository.findOne({ id, user: { id: userId } });
 
     if (!task) {
       throw new ApiError('Tarefa não encontrada');
     }
 
-    const taskExists = await taskRepository.findOne({ title });
+    const taskExists = await taskRepository.findOne({
+      title,
+      id: Not(Equal(id)),
+      user: { id: userId },
+    });
 
-    if (taskExists && task.title !== title) {
+    if (taskExists) {
       throw new ApiError('Tarefa já existe');
     }
 
@@ -63,9 +79,9 @@ export class TaskService {
     return task;
   }
 
-  public async completeTaskService({ id }: { id: string }): Promise<Task> {
+  public async completeTaskService(id: string, userId: string): Promise<Task> {
     const taskRepository = getCustomRepository(TasksRepository);
-    const task = await taskRepository.findOne(id);
+    const task = await taskRepository.findOne({ id, user: { id: userId } });
 
     if (!task) {
       throw new ApiError('Tarefa não encontrada');
@@ -78,9 +94,9 @@ export class TaskService {
     return task;
   }
 
-  public async deleteTaskService({ id }: { id: string }): Promise<string> {
+  public async deleteTaskService(id: string, userId: string): Promise<string> {
     const taskRepository = getCustomRepository(TasksRepository);
-    const task = await taskRepository.findOne(id);
+    const task = await taskRepository.findOne({ id, user: { id: userId } });
 
     if (!task) {
       throw new ApiError('Tarefa não encontrada');
@@ -91,10 +107,12 @@ export class TaskService {
     return 'Tarefa deletada com sucesso';
   }
 
-  public async deleteAllTasksService(): Promise<string> {
+  public async deleteAllTasksService(userId: string): Promise<string> {
     const taskRepository = getCustomRepository(TasksRepository);
 
-    await taskRepository.clear();
+    const tasks = await taskRepository.find({ user: { id: userId } });
+
+    await taskRepository.remove(tasks);
 
     return 'Tarefas deletadas com sucesso';
   }

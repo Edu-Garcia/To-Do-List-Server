@@ -1,11 +1,11 @@
 import 'reflect-metadata';
-import express, { NextFunction, Request, Response } from 'express';
 import 'express-async-errors';
-import cors from 'cors';
-import { errors } from 'celebrate';
-import routes from './routes';
-import ApiError from './utils/apiErrors.util';
 import './config/typeorm';
+import cors from 'cors';
+import express, { NextFunction, Request, Response } from 'express';
+import { errors } from 'celebrate';
+import { routes } from './routes';
+import { ApiError } from './utils/apiErrors.util';
 
 const app = express();
 
