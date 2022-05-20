@@ -50,7 +50,7 @@ export class UserService {
     name,
     email,
     password,
-  }: IUpdateUserProps): Promise<User> {
+  }: IUpdateUserProps): Promise<string> {
     const usersRepository = getCustomRepository(UsersRepository);
     const user = await usersRepository.findOne(id);
 
@@ -76,7 +76,7 @@ export class UserService {
 
     await usersRepository.save(user);
 
-    return user;
+    return 'Usuário atualizado com sucesso!';
   }
 
   public async deleteUserService(id: string): Promise<string> {

@@ -35,7 +35,7 @@ export class UsersController {
       password,
     });
 
-    return response.json(user);
+    return response.json({ message: user });
   }
 
   public async delete(request: Request, response: Response): Promise<Response> {

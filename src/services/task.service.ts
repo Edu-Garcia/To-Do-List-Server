@@ -79,7 +79,10 @@ export class TaskService {
     return task;
   }
 
-  public async completeTaskService(id: string, userId: string): Promise<Task> {
+  public async completeTaskService(
+    id: string,
+    userId: string,
+  ): Promise<string> {
     const taskRepository = getCustomRepository(TasksRepository);
     const task = await taskRepository.findOne({ id, user: { id: userId } });
 
@@ -91,7 +94,7 @@ export class TaskService {
 
     await taskRepository.save(task);
 
-    return task;
+    return 'Tarefa atualizada com sucesso';
   }
 
   public async deleteTaskService(id: string, userId: string): Promise<string> {

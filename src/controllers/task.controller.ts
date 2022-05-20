@@ -55,7 +55,7 @@ export class TasksController {
 
     const task = await taskService.completeTaskService(id, userId);
 
-    return response.json(task);
+    return response.json({ message: task });
   }
 
   public async delete(request: Request, response: Response): Promise<Response> {
