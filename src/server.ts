@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import 'express-async-errors';
 import './config/typeorm';
+import './config/container';
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import { errors } from 'celebrate';

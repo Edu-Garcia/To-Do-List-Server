@@ -1,9 +1,10 @@
+import { ITask } from 'src/interfaces/ITask';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Base } from './Base.Entity';
 import { User } from './User.Entity';
 
 @Entity('tasks')
-export class Task extends Base {
+export class Task extends Base implements ITask {
   @Column()
   title: string;
 

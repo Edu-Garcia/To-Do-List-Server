@@ -1,23 +1,24 @@
 import { hash } from 'bcryptjs';
-import { User } from 'src/database/entities/User.Entity';
 import { ApiError } from 'src/utils/apiErrors.util';
-import { Equal, getCustomRepository, Not } from 'typeorm';
-import { UsersRepository } from '../database/repositories/user.repository';
+import { inject, injectable } from 'tsyringe';
+import {
+  ICreateUser,
+  IUsersRepository,
+  IUpdateUser,
+  IUser,
+} from 'src/interfaces/IUser';
 
-interface ICreateUserProps {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface IUpdateUserProps extends ICreateUserProps {
-  id: string;
-}
-
+@injectable()
 export class UserService {
-  public async listUserService(id: string): Promise<User | undefined> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const user = await usersRepository.findOne({ id });
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {
+    //
+  }
+
+  public async listUserService(id: string): Promise<IUser | undefined> {
+    const user = await this.usersRepository.findById(id);
     return user;
   }
 
@@ -25,9 +26,8 @@ export class UserService {
     name,
     email,
     password,
-  }: ICreateUserProps): Promise<User> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const userExists = await usersRepository.findOne({ email });
+  }: ICreateUser): Promise<IUser> {
+    const userExists = await this.usersRepository.findByEmail(email);
 
     if (userExists) {
       throw new ApiError('Usuário já cadastrado');
@@ -35,12 +35,11 @@ export class UserService {
 
     const hashedPassword = await hash(password, 8);
 
-    const user = usersRepository.create({
+    const user = await this.usersRepository.create({
       name,
       email,
       password: hashedPassword,
     });
-    await usersRepository.save(user);
 
     return user;
   }
@@ -50,17 +49,17 @@ export class UserService {
     name,
     email,
     password,
-  }: IUpdateUserProps): Promise<string> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const user = await usersRepository.findOne(id);
+  }: IUpdateUser): Promise<string> {
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new ApiError('Usuário não encontrado!');
     }
 
-    const userExists = await usersRepository.findOne({
-      where: { email, id: Not(Equal(id)) },
-    });
+    const userExists = await this.usersRepository.findDuplicatedEmail(
+      id,
+      email,
+    );
 
     if (userExists) {
       throw new ApiError('Usuário já cadastrado');
@@ -74,20 +73,19 @@ export class UserService {
     user.email = email;
     user.password = password;
 
-    await usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     return 'Usuário atualizado com sucesso!';
   }
 
   public async deleteUserService(id: string): Promise<string> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const user = await usersRepository.findOne(id);
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new ApiError('Usuário não encontrado!');
     }
 
-    await usersRepository.remove(user);
+    await this.usersRepository.remove(user);
 
     return 'Usuário excluído com sucesso!';
   }

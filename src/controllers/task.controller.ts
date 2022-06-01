@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { TaskService } from '../services/task.service';
+import { container } from 'tsyringe';
 
 export class TasksController {
   public async index(request: Request, response: Response): Promise<Response> {
     const userId = request.user.id;
 
-    const taskService = new TaskService();
+    const taskService = container.resolve(TaskService);
 
     const tasks = await taskService.listTaskService(userId);
 
@@ -16,7 +17,7 @@ export class TasksController {
     const { title, description } = request.body;
     const userId = request.user.id;
 
-    const taskService = new TaskService();
+    const taskService = container.resolve(TaskService);
 
     const task = await taskService.createTaskService({
       title,
@@ -32,7 +33,7 @@ export class TasksController {
     const { id } = request.params;
     const userId = request.user.id;
 
-    const taskService = new TaskService();
+    const taskService = container.resolve(TaskService);
 
     const task = await taskService.updateTaskService({
       id,
@@ -51,7 +52,7 @@ export class TasksController {
     const { id } = request.params;
     const userId = request.user.id;
 
-    const taskService = new TaskService();
+    const taskService = container.resolve(TaskService);
 
     const task = await taskService.completeTaskService(id, userId);
 
@@ -62,7 +63,7 @@ export class TasksController {
     const { id } = request.params;
     const userId = request.user.id;
 
-    const taskService = new TaskService();
+    const taskService = container.resolve(TaskService);
 
     const task = await taskService.deleteTaskService(id, userId);
 
@@ -75,7 +76,7 @@ export class TasksController {
   ): Promise<Response> {
     const userId = request.user.id;
 
-    const taskService = new TaskService();
+    const taskService = container.resolve(TaskService);
 
     const task = await taskService.deleteAllTasksService(userId);
 
